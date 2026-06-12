@@ -8,7 +8,7 @@
 
 * **Rôles 1 et 2 (Platform + Network)** : Maxime Mercier
 
-* **Rôle 3 (Compute)** : Kilian Auvinet
+* **Rôle 3 (Compute)** : Kiliann Auvinet
 
 * **Rôle 4 (Data)** : Samuel Berthier
 
