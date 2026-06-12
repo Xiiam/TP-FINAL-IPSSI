@@ -30,7 +30,7 @@ resource "aws_db_parameter_group" "postgres16" {
 
 resource "aws_db_instance" "nextcloud" {
   engine                  = "postgres"
-  engine_version          = "16.4"
+  engine_version = "16.9"
   instance_class          = "db.t3.micro"
   allocated_storage       = 20
   max_allocated_storage   = 100

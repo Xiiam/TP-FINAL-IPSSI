@@ -56,6 +56,8 @@ data "aws_iam_policy_document" "assume_ec2" {
 resource "aws_iam_role" "app" {
   name               = "${local.name_prefix}-app-role"
   assume_role_policy = data.aws_iam_policy_document.assume_ec2.json
+    permissions_boundary = "arn:aws:iam::039497794217:policy/formation-permissions-boundary-paris"
+  tags               = merge(local.common_tags, { Name = "${local.name_prefix}-app-role" })
 }
 
 resource "aws_iam_role_policy" "app_secrets" {
@@ -100,4 +102,10 @@ resource "aws_iam_role_policy_attachment" "app_cloudwatch" {
 resource "aws_iam_instance_profile" "app" {
   name = "${local.name_prefix}-app-profile"
   role = aws_iam_role.app.name
+
+  tags = {}
+
+  lifecycle {
+    ignore_changes = [tags, tags_all]
+  }
 }

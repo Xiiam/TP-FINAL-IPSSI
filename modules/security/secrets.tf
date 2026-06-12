@@ -11,7 +11,7 @@
 #   - random_password                "admin" (length = 20, special = true)
 #
 #   - aws_secretsmanager_secret         "db_password"
-#                                         - name        = "${local.name_prefix}-db-password"
+#                                         - name        = "${local.name_prefix}-db-password-v2"
 #                                         - kms_key_id  = aws_kms_key.main.arn
 #                                         - recovery_window_in_days = 0  (dev — destroy immediat)
 #
@@ -40,7 +40,7 @@ resource "random_password" "admin" {
 }
 
 resource "aws_secretsmanager_secret" "db_password" {
-  name                    = "${local.name_prefix}-db-password"
+  name                    = "${local.name_prefix}-db-password-v2"
   kms_key_id              = aws_kms_key.main.arn
   recovery_window_in_days = 0
 }
@@ -51,7 +51,7 @@ resource "aws_secretsmanager_secret_version" "db_password" {
 }
 
 resource "aws_secretsmanager_secret" "admin_password" {
-  name                    = "${local.name_prefix}-admin-password"
+  name                    = "${local.name_prefix}-admin-password-v2"
   kms_key_id              = aws_kms_key.main.arn
   recovery_window_in_days = 0
 }

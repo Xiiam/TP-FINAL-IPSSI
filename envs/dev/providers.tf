@@ -29,6 +29,12 @@ provider "aws" {
       Environment = var.environment
       ManagedBy   = "Terraform"
       Team        = "TP05-kolab"
+      Owner       = "etudiant19"
     }
   }
+}
+
+provider "aws" {
+  alias  = "no_default_tags"
+  region = var.aws_region
 }
