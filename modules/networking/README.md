@@ -1,23 +1,36 @@
-# Module `networking`
+# modules/networking
 
-Module VPC pour le projet Nextcloud Kolab.
+VPC 10.30.0.0/16 + 6 subnets sur 2 AZ + NAT Gateway single + 2 VPC endpoints.
 
-Créé par le **Rôle 2 — Network Engineer** lors du TP05.
+## Inputs
 
-## Contenu attendu
+| Nom | Type | Défaut | Description |
+|-----|------|--------|-------------|
+| project_name | string | requis | Nom de projet (préfixe les tags Name) |
+| environment | string | requis | Nom de l'environnement (dev, staging, prod) |
+| vpc_cidr | string | `10.30.0.0/16` | CIDR block du VPC |
+| azs | list(string) | `["eu-west-3a", "eu-west-3b"]` | Zones de disponibilité (2 exactement) |
 
-- VPC `10.30.0.0/16` (eu-west-1)
-- 6 subnets : 2 publics / 2 privés app / 2 privés DB
-- Internet Gateway + NAT Gateway (single-AZ)
-- Route tables et associations
-- 3 VPC Endpoints : S3 (Gateway), Secrets Manager et KMS (Interface)
+## Outputs
 
-## Interface
+| Nom | Description |
+|-----|-------------|
+| vpc_id | ID du VPC créé |
+| vpc_cidr | CIDR block du VPC |
+| public_subnet_ids | Map AZ -> ID des subnets publics |
+| private_app_subnet_ids | Map AZ -> ID des subnets privés app |
+| private_db_subnet_ids | Map AZ -> ID des subnets privés DB |
+| nat_gateway_public_ip | IP publique de la NAT Gateway |
+| vpc_endpoints_security_group_id | SG attaché aux VPC endpoints |
 
-Voir `variables.tf` (inputs) et `outputs.tf` (outputs exposés aux autres modules).
+## Usage
 
-Consultez [role-2-network.md](../../../cours/jour5/tp05-team-nextcloud/role-2-network.md) pour les étapes détaillées.
-
-## Génération README automatique
-
-Bonus : `terraform-docs markdown table --output-file README.md --output-mode inject .`
+```hcl
+module "networking" {
+  source       = "../../modules/networking"
+  project_name = "kolab"
+  environment  = "dev"
+  vpc_cidr     = "10.30.0.0/16"
+  azs          = ["eu-west-3a", "eu-west-3b"]
+}
+```
