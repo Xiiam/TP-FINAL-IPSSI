@@ -1,0 +1,65 @@
+#!/bin/bash
+# =============================================================================
+# nextcloud-user-data.sh.tftpl
+# ROLE 3 — user_data EC2 : installe Docker et lance le container Nextcloud.
+# =============================================================================
+# Variables injectees par templatefile() depuis Terraform :
+#   $${aws_region}                - region AWS (ex: eu-west-1)
+#   $${db_endpoint}               - endpoint RDS (ex: xxx.xxxx.eu-west-1.rds.amazonaws.com)
+#   $${db_name}                   - nom de la base (nextcloud)
+#   $${db_username}               - utilisateur DB (nextcloud)
+#   $${db_password_secret_arn}    - ARN du secret Manager du mdp DB
+#   $${admin_password_secret_arn} - ARN du secret Manager du mdp admin Nextcloud
+#   $${s3_bucket}                 - nom du bucket S3 primary storage
+#
+# 🔷 ATTENTION a l interpolation : dans un template .tftpl, ${var} est interpole
+#    par Terraform. Pour un $VARIABLE bash litteral, on double le $ : $$VARIABLE.
+# =============================================================================
+
+set -euxo pipefail
+
+# TODO(role-3) : installer Docker
+#   dnf update -y
+#   dnf install -y docker
+#   systemctl enable --now docker
+
+# TODO(role-3) : attendre que RDS soit joignable (retry loop)
+#   Pattern :
+#     for i in {1..30}; do
+#       if nc -zv ${db_endpoint} 5432 2>/dev/null; then break; fi
+#       sleep 10
+#     done
+
+# TODO(role-3) : recuperer les 2 mots de passe via AWS CLI
+#   (le role IAM attache a l EC2 permet l acces via instance profile, pas de clef)
+#
+#   DB_PWD=$(aws secretsmanager get-secret-value \
+#     --region ${aws_region} \
+#     --secret-id "${db_password_secret_arn}" \
+#     --query SecretString --output text)
+#
+#   ADMIN_PWD=$(aws secretsmanager get-secret-value \
+#     --region ${aws_region} \
+#     --secret-id "${admin_password_secret_arn}" \
+#     --query SecretString --output text)
+
+# TODO(role-3) : docker run nextcloud:30-apache avec les variables d environnement
+#   docker run -d \
+#     --name nextcloud \
+#     --restart always \
+#     -p 80:80 \
+#     -e POSTGRES_HOST="${db_endpoint}" \
+#     -e POSTGRES_DB="${db_name}" \
+#     -e POSTGRES_USER="${db_username}" \
+#     -e POSTGRES_PASSWORD="$$DB_PWD" \
+#     -e NEXTCLOUD_ADMIN_USER=admin \
+#     -e NEXTCLOUD_ADMIN_PASSWORD="$$ADMIN_PWD" \
+#     -e OBJECTSTORE_S3_BUCKET="${s3_bucket}" \
+#     -e OBJECTSTORE_S3_REGION="${aws_region}" \
+#     -e OBJECTSTORE_S3_USEPATH_STYLE=false \
+#     -e OBJECTSTORE_S3_SSL=true \
+#     -e OBJECTSTORE_S3_AUTOCREATE=false \
+#     -e OBJECTSTORE_S3_USE_EC2_IAM=true \
+#     -e NEXTCLOUD_TRUSTED_DOMAINS="*" \
+#     -e OVERWRITEPROTOCOL=https \
+#     nextcloud:30-apache
